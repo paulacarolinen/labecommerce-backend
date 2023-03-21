@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "tsc && node ./build/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,8 @@
     "url": "https://github.com/paulacarolinen/labecommerce-backend/issues"
   },
   "homepage": "https://github.com/paulacarolinen/labecommerce-backend#readme",
-  "type": "module"
+  "devDependencies": {
+    "@types/node": "^18.15.5",
+    "typescript": "^5.0.2"
+  }
 }
