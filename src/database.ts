@@ -1,44 +1,101 @@
-import { TUser, TProduct, TPurchase } from "./type";
+import { TUser, TProduct, TPurchase, PRODUCT_CATEGORY } from "./type";
 
-export const users: TUser[] = [
-  {
-    id: "pessoa1",
-    email: "pessoa1@email.com",
-    password: "xxxx",
-  },
-  {
-    id: "pessoa2",
-    email: "pessoa2@email.com",
-    password: "xxxx",
-  },
-];
+const users: TUser[] = [];
+const products: TProduct[] = [];
+const purchases: TPurchase[] = [];
 
-export const products: TProduct[] = [
-  {
-    id: "bolo",
-    name: "bolo",
-    price: 10,
-    category: "food",
-  },
-  {
-    id: "pão",
-    name: "pão",
-    price: 10,
-    category: "food",
-  },
-];
+export function createUser(id: string, email: string, password: string): void {
+  const newUser = {
+    id,
+    email,
+    password,
+  };
+  users.push(newUser);
 
-export const purchases: TPurchase[] = [
-  {
-    userId: "pessoa1",
-    productId: "bolo",
-    quantity: 2,
-    totalPrice: 20,
-  },
-  {
-    userId: "pessoa2",
-    productId: "pão",
-    quantity: 4,
-    totalPrice: 40,
-  },
-];
+  console.log("Cadastro realizado com sucesso");
+}
+
+export function getAllUsers(): void {
+  console.log(users);
+}
+
+export function createProduct(
+  id: string,
+  name: string,
+  price: number,
+  category: PRODUCT_CATEGORY
+): void {
+  const newProduct = {
+    id,
+    name,
+    price,
+    category,
+  };
+
+  products.push(newProduct);
+
+  console.log("Produto criado com sucesso");
+}
+
+export function getAllProducts() {
+  console.log(products);
+}
+
+export function getProductById(idToSearch: string): void {
+  const productId = products.find(
+    (product) => product.id.toLowerCase() === idToSearch.toLowerCase()
+  );
+
+  if (productId) {
+    console.log(productId);
+  } else {
+    console.log("Produto não encontrado");
+  }
+}
+
+export function queryProductsByName(name: string): void {
+  const productName = products.filter((product) =>
+    product.name.toLowerCase().includes(name.toLowerCase())
+  );
+
+  if (productName) {
+    console.log(productName);
+  } else {
+    console.log("Produto não encontrado");
+  }
+}
+
+export function createPurchase(
+  userId: string,
+  productId: string,
+  quantity: number,
+  totalPrice: number
+): void {
+  const newPurchase = {
+    userId,
+    productId,
+    quantity,
+    totalPrice,
+  };
+  purchases.push(newPurchase);
+
+  console.log("Compra realizada com sucesso");
+}
+
+export function getAllPurchasesFromUserId(userIdToSearch: string): void {
+  const userPurchasesIds = purchases
+    .filter(
+      (purchase) =>
+        purchase.userId.toLowerCase() === userIdToSearch.toLowerCase()
+    )
+    .map((purchase) => purchase.productId);
+
+  if (userPurchasesIds.length !== 0) {
+    const userProducts = products.filter((product) =>
+      userPurchasesIds.includes(product.id)
+    );
+    console.log(userProducts);
+  } else {
+    console.log("Produto não encontrado");
+  }
+}
