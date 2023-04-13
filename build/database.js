@@ -39,17 +39,17 @@ function getProductById(idToSearch) {
         console.log(productId);
     }
     else {
-        console.log('Produto não encontrado');
+        console.log("Produto não encontrado");
     }
 }
 exports.getProductById = getProductById;
 function queryProductsByName(name) {
-    const productName = products.filter(product => product.name.toLowerCase().includes(name.toLowerCase()));
+    const productName = products.filter((product) => product.name.toLowerCase().includes(name.toLowerCase()));
     if (productName) {
         console.log(productName);
     }
     else {
-        console.log('Produto não encontrado');
+        console.log("Produto não encontrado");
     }
 }
 exports.queryProductsByName = queryProductsByName;
@@ -58,7 +58,7 @@ function createPurchase(userId, productId, quantity, totalPrice) {
         userId,
         productId,
         quantity,
-        totalPrice
+        totalPrice,
     };
     purchases.push(newPurchase);
     console.log("Compra realizada com sucesso");
@@ -73,7 +73,7 @@ function getAllPurchasesFromUserId(userIdToSearch) {
         console.log(userProducts);
     }
     else {
-        console.log('Produto não encontrado');
+        console.log("Produto não encontrado");
     }
 }
 exports.getAllPurchasesFromUserId = getAllPurchasesFromUserId;
