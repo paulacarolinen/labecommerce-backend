@@ -12,72 +12,133 @@ app.listen(3003, () => {
   console.log("Servidor rodando na porta 3003")
 })
 
-app.get("/users", (req: Request, res: Response) => {
-  res.status(200).send(users)
-})
+app.get("/users", async (req: Request, res: Response) => {
+  try {
+    res.status(200).send(users);
+  } catch (error) {
+    res.status(500).send({ error: "Erro ao buscar usuários" });
+  }
+});
 
-app.get("/products", (req: Request, res: Response) => {
-  res.status(200).send(products)
-})
+app.get("/products", async (req: Request, res: Response) => {
+  try {
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send({ error: "Erro ao buscar produtos" });
+  }
+});
 
 app.get("/purchases", (req: Request, res: Response) => {
   res.status(200).send(purchases)
 })
 
-app.get("/product/search", (req: Request, res: Response) => {
-  const query = req.query.q as string
-  const result = products.filter((product) =>
-    product.name.toLowerCase().includes(query.toLowerCase())
-  )
+app.get("/product/search", async (req: Request, res: Response) => {
+  try {
+    const query = req.query.q as string;
+    if (!query || query.trim().length === 0) {
+      return res
+        .status(400)
+        .send({ error: "O parâmetro de busca deve conter pelo menos um caractere" });
+    }
 
-  res.status(200).send(result)
-})
+    const result = products.filter((product) =>
+      product.name.toLowerCase().includes(query.toLowerCase())
+    );
 
-app.post("/users", (req: Request, res: Response) => {
-  const body = req.body
-  const { id, email, password } = body
-
-  const newUser: TUser = {
-    id,
-    email,
-    password,
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).send({ error: "Erro ao buscar produto" });
   }
+});
 
-  users.push(newUser)
+app.post("/users", async (req: Request, res: Response) => {
+  try {
+    const { id, email, password } = req.body;
 
-  res.status(201).send("Cadastro realizado com sucesso")
-})
+    if (!id || !email || !password) {
+      return res.status(400).send({ error: "Dados incompletos" });
+    }
 
-app.post("/products", (req: Request, res: Response) => {
-  const body = req.body
-  const { id, name, price, category } = body
+    const existingUser = users.find((user) => user.id === id || user.email === email);
+    if (existingUser) {
+      return res.status(400).send({ error: "Usuário já cadastrado" });
+    }
 
-  const newProduct: TProduct = {
-    id,
-    name,
-    price,
-    category,
+    const newUser: TUser = {
+      id,
+      email,
+      password,
+    };
+
+    users.push(newUser);
+
+    res.status(201).send("Cadastro realizado com sucesso");
+  } catch (error) {
+    res.status(500).send({ error: "Erro ao criar usuário" });
   }
+});
 
-  products.push(newProduct)
+app.post("/products", async (req: Request, res: Response) => {
+  try {
+    const { id, name, price, category } = req.body;
 
-  res.status(201).send("Produto cadastrado com sucesso")
-})
+
+    if (!id || !name || !price || !category) {
+      return res.status(400).send({ error: "Dados incompletos" });
+    }
+
+    const existingProduct = products.find((product) => product.id === id);
+    if (existingProduct) {
+      return res.status(400).send({ error: "Produto já cadastrado" });
+    }
+
+    const newProduct: TProduct = {
+      id,
+      name,
+      price,
+      category,
+    };
+
+    products.push(newProduct);
+
+    res.status(201).send("Produto cadastrado com sucesso");
+  } catch (error) {
+    res.status(500).send({ error: "Erro ao criar produto" });
+  }
+});
 
 app.post("/purchases", (req: Request, res: Response) => {
-  const body = req.body
-  const { userId, productId, quantity, totalPrice } = body
+  try {
+    const body = req.body
+    const { userId, productId, quantity, totalPrice } = body
 
-  const newPurchase: TPurchase = {
-    userId,
-    productId,
-    quantity,
-    totalPrice,
+    if (!userId || !productId || !quantity || !totalPrice) {
+      throw new Error("Todos os campos são obrigatórios")
+    }
+
+    const userExists = users.find((user) => user.id === userId)
+    if (!userExists) {
+      throw new Error("Usuário não encontrado")
+    }
+
+    const productExists = products.find((product) => product.id === productId)
+    if (!productExists) {
+      throw new Error("Produto não encontrado")
+    }
+
+    const newPurchase: TPurchase = {
+      userId,
+      productId,
+      quantity,
+      totalPrice,
+    }
+
+    purchases.push(newPurchase)
+
+    res.status(201).send("Compra realizada com sucesso")
+  } catch (error:any) {
+    res.status(400).send(error.message)
   }
-
-  purchases.push(newPurchase)
-
-  res.status(201).send("Compra realizada com sucesso")
 })
 
 app.get("/products/:id", (req: Request, res: Response) => {
@@ -93,73 +154,97 @@ app.get("/products/:id", (req: Request, res: Response) => {
 
 app.get("/users/:id/purchases", (req: Request, res: Response) => {
   const id = req.params.id;
-  const userPurchases = purchases.filter(
-    (purchase) => purchase.userId === id
-  );
+  const user = users.find((user) => user.id === id);
 
-  if (userPurchases.length > 0) {
-    res.status(200).send(userPurchases);
-  } else {
-    res.status(404).send("Nenhuma compra encontrada para esse usuário");
+  if (!user) {
+    res.status(404).send("Usuário não encontrado");
+    return;
   }
+
+  const userPurchases = purchases.filter((purchase) => purchase.userId === id);
+
+  res.status(200).send(userPurchases);
 });
 
 app.delete("/users/:id", (req: Request, res: Response) => {
   const id = req.params.id;
-  
-  const index = users.findIndex(user => user.id === id);
 
-  if (index >= 0) {
-    users.splice(index, 1);
-    res.status(200).send("User apagado com sucesso");
-  } else {
-    res.status(404).send("User não encontrado");
+  const userIndex = users.findIndex((user) => user.id === id);
+
+  if (userIndex === -1) {
+    res.status(404).send("Usuário não encontrado");
+    return;
   }
+
+  users.splice(userIndex, 1);
+
+  res.status(200).send("Usuário apagado com sucesso");
 });
 
 app.delete("/products/:id", (req: Request, res: Response) => {
   const id = req.params.id;
-  
-  const index = products.findIndex((product) => product.id === id);
-  
-  if (index !== -1) {
-    products.splice(index, 1);
-    res.status(200).send("Produto apagado com sucesso");
-  } else {
+
+  const productIndex = products.findIndex((product) => product.id === id);
+
+  if (productIndex === -1) {
     res.status(404).send("Produto não encontrado");
+    return;
   }
+
+  products.splice(productIndex, 1);
+
+  res.status(200).send("Produto apagado com sucesso");
 });
 
 app.put("/users/:id", (req: Request, res: Response) => {
   const id = req.params.id;
   const { email, password } = req.body;
 
-  const userToEdit = users.find((user) => user.id === id);
+  const userIndex = users.findIndex((user) => user.id === id);
 
-  if (userToEdit) {
-    userToEdit.email = email ?? userToEdit.email;
-    userToEdit.password = password ?? userToEdit.password;
+  if (userIndex === -1) {
+    res.status(404).send("Usuário não encontrado");
+    return;
   }
+
+  if (!email && !password) {
+    res.status(400).send("Por favor, forneça novas informações para atualização do cadastro");
+    return;
+  }
+
+  const editedUser = { ...users[userIndex] };
+
+  editedUser.email = email ?? editedUser.email;
+  editedUser.password = password ?? editedUser.password;
+
+  users[userIndex] = editedUser;
 
   res.status(200).send("Cadastro atualizado com sucesso");
 });
 
 app.put("/products/:id", (req: Request, res: Response) => {
   const id = req.params.id;
+  const productIndex = products.findIndex((product) => product.id === id);
 
-  const newName = req.body.name as string | undefined;
-  const newPrice = req.body.price as number | undefined;
-  const newCategory = req.body.category as PRODUCT_CATEGORY | undefined;
-
-  const productToEdit = products.find((product) => {
-    return product.id === id;
-  });
-
-  if (productToEdit) {
-    productToEdit.name = newName || productToEdit.name;
-    productToEdit.price = isNaN(newPrice as number) ? productToEdit.price : newPrice as number;
-    productToEdit.category = newCategory || productToEdit.category;
+  if (productIndex === -1) {
+    res.status(404).send("Produto não encontrado");
+    return;
   }
+
+  const { name, price, category } = req.body;
+
+  if (!name && !price && !category) {
+    res.status(400).send("Por favor, forneça novas informações para atualização do produto");
+    return;
+  }
+
+  const editedProduct = { ...products[productIndex] };
+
+  editedProduct.name = name ?? editedProduct.name;
+  editedProduct.price = (price !== undefined && !isNaN(Number(price))) ? Number(price) : editedProduct.price;
+  editedProduct.category = category ?? editedProduct.category;
+
+  products[productIndex] = editedProduct;
 
   res.status(200).send("Produto atualizado com sucesso");
 });
