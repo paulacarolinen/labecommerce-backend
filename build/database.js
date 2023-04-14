@@ -1,80 +1,50 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllPurchasesFromUserId = exports.createPurchase = exports.queryProductsByName = exports.getProductById = exports.getAllProducts = exports.createProduct = exports.getAllUsers = exports.createUser = void 0;
-const users = [];
-const products = [];
-const purchases = [];
-function createUser(id, email, password) {
-    const newUser = {
-        id,
-        email,
-        password,
-    };
-    users.push(newUser);
-    console.log("Cadastro realizado com sucesso");
-}
-exports.createUser = createUser;
-function getAllUsers() {
-    console.log(users);
-}
-exports.getAllUsers = getAllUsers;
-function createProduct(id, name, price, category) {
-    const newProduct = {
-        id,
-        name,
-        price,
-        category,
-    };
-    products.push(newProduct);
-    console.log("Produto criado com sucesso");
-}
-exports.createProduct = createProduct;
-function getAllProducts() {
-    console.log(products);
-}
-exports.getAllProducts = getAllProducts;
-function getProductById(idToSearch) {
-    const productId = products.find((product) => product.id.toLowerCase() === idToSearch.toLowerCase());
-    if (productId) {
-        console.log(productId);
+exports.purchases = exports.products = exports.users = void 0;
+const type_1 = require("./type");
+exports.users = [
+    {
+        id: "u001",
+        email: "usuario@email.com",
+        password: "xxxx",
+    },
+    {
+        id: "u002",
+        email: "usuaio@email.com",
+        password: "xxxx",
+    },
+    {
+        id: "u003",
+        email: "usuaio@email.com",
+        password: "xxxx",
     }
-    else {
-        console.log("Produto não encontrado");
+];
+exports.products = [
+    {
+        id: "p001",
+        name: "Cake",
+        price: 20,
+        category: type_1.PRODUCT_CATEGORY.FOOD,
+    },
+    {
+        id: "p003",
+        name: "Monitor HD",
+        price: 100,
+        category: type_1.PRODUCT_CATEGORY.ELECTRONICS,
     }
-}
-exports.getProductById = getProductById;
-function queryProductsByName(name) {
-    const productName = products.filter((product) => product.name.toLowerCase().includes(name.toLowerCase()));
-    if (productName) {
-        console.log(productName);
-    }
-    else {
-        console.log("Produto não encontrado");
-    }
-}
-exports.queryProductsByName = queryProductsByName;
-function createPurchase(userId, productId, quantity, totalPrice) {
-    const newPurchase = {
-        userId,
-        productId,
-        quantity,
-        totalPrice,
-    };
-    purchases.push(newPurchase);
-    console.log("Compra realizada com sucesso");
-}
-exports.createPurchase = createPurchase;
-function getAllPurchasesFromUserId(userIdToSearch) {
-    const userPurchasesIds = purchases
-        .filter((purchase) => purchase.userId.toLowerCase() === userIdToSearch.toLowerCase())
-        .map((purchase) => purchase.productId);
-    if (userPurchasesIds.length !== 0) {
-        const userProducts = products.filter((product) => userPurchasesIds.includes(product.id));
-        console.log(userProducts);
-    }
-    else {
-        console.log("Produto não encontrado");
-    }
-}
-exports.getAllPurchasesFromUserId = getAllPurchasesFromUserId;
+];
+exports.purchases = [
+    {
+        userId: exports.users[0].id,
+        productId: exports.products[0].id,
+        quantity: 1,
+        totalPrice: exports.products[0].price * 1,
+    },
+    {
+        userId: exports.users[1].id,
+        productId: exports.products[1].id,
+        quantity: 2,
+        totalPrice: exports.products[1].price * 2,
+    },
+];
 //# sourceMappingURL=database.js.map
