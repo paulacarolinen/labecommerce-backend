@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express"
 import cors from "cors"
 import { products, purchases, users } from "./database"
-import { TProduct, TPurchase, TUser } from "./type"
+import { PRODUCT_CATEGORY, TProduct, TPurchase, TUser } from "./type"
 
 const app = express()
 
@@ -79,3 +79,87 @@ app.post("/purchases", (req: Request, res: Response) => {
 
   res.status(201).send("Compra realizada com sucesso")
 })
+
+app.get("/products/:id", (req: Request, res: Response) => {
+  const id = req.params.id;
+  const product = products.find((product) => product.id === id);
+
+  if (product) {
+    res.status(200).send(product);
+  } else {
+    res.status(404).send("Produto não encontrado");
+  }
+});
+
+app.get("/users/:id/purchases", (req: Request, res: Response) => {
+  const id = req.params.id;
+  const userPurchases = purchases.filter(
+    (purchase) => purchase.userId === id
+  );
+
+  if (userPurchases.length > 0) {
+    res.status(200).send(userPurchases);
+  } else {
+    res.status(404).send("Nenhuma compra encontrada para esse usuário");
+  }
+});
+
+app.delete("/users/:id", (req: Request, res: Response) => {
+  const id = req.params.id;
+  
+  const index = users.findIndex(user => user.id === id);
+
+  if (index >= 0) {
+    users.splice(index, 1);
+    res.status(200).send("User apagado com sucesso");
+  } else {
+    res.status(404).send("User não encontrado");
+  }
+});
+
+app.delete("/products/:id", (req: Request, res: Response) => {
+  const id = req.params.id;
+  
+  const index = products.findIndex((product) => product.id === id);
+  
+  if (index !== -1) {
+    products.splice(index, 1);
+    res.status(200).send("Produto apagado com sucesso");
+  } else {
+    res.status(404).send("Produto não encontrado");
+  }
+});
+
+app.put("/users/:id", (req: Request, res: Response) => {
+  const id = req.params.id;
+  const { email, password } = req.body;
+
+  const userToEdit = users.find((user) => user.id === id);
+
+  if (userToEdit) {
+    userToEdit.email = email ?? userToEdit.email;
+    userToEdit.password = password ?? userToEdit.password;
+  }
+
+  res.status(200).send("Cadastro atualizado com sucesso");
+});
+
+app.put("/products/:id", (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const newName = req.body.name as string | undefined;
+  const newPrice = req.body.price as number | undefined;
+  const newCategory = req.body.category as PRODUCT_CATEGORY | undefined;
+
+  const productToEdit = products.find((product) => {
+    return product.id === id;
+  });
+
+  if (productToEdit) {
+    productToEdit.name = newName || productToEdit.name;
+    productToEdit.price = isNaN(newPrice as number) ? productToEdit.price : newPrice as number;
+    productToEdit.category = newCategory || productToEdit.category;
+  }
+
+  res.status(200).send("Produto atualizado com sucesso");
+});
