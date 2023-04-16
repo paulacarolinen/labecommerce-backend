@@ -18,7 +18,7 @@ const database_1 = require("./database");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
-app.listen(3003, () => {
+app.listen(3000, () => {
     console.log("Servidor rodando na porta 3003");
 });
 app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -126,26 +126,6 @@ app.post("/purchases", (req, res) => {
     }
     catch (error) {
         res.status(400).send(error.message);
-    }
-});
-app.get("/products/:id", (req, res) => {
-    const id = req.params.id;
-    const product = database_1.products.find((product) => product.id === id);
-    if (product) {
-        res.status(200).send(product);
-    }
-    else {
-        res.status(404).send("Produto não encontrado");
-    }
-});
-app.get("/users/:id/purchases", (req, res) => {
-    const id = req.params.id;
-    const userPurchases = database_1.purchases.filter((purchase) => purchase.userId === id);
-    if (userPurchases.length > 0) {
-        res.status(200).send(userPurchases);
-    }
-    else {
-        res.status(404).send("Nenhuma compra encontrada para esse usuário");
     }
 });
 app.get("/products/:id", (req, res) => {

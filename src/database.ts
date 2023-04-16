@@ -3,17 +3,12 @@ import { TUser, PRODUCT_CATEGORY, TProduct, TPurchase } from "./type";
 export const users: TUser[] = [
   {
     id: "u001",
-    email: "usuario@email.com",
+    email: "usuario1@email.com",
     password: "xxxx",
   },
   {
     id: "u002",
-    email: "usuaio@email.com",
-    password: "xxxx",
-  },
-  {
-    id: "u003",
-    email: "usuaio@email.com",
+    email: "usuario2@email.com",
     password: "xxxx",
   }
 ]
