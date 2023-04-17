@@ -121,3 +121,33 @@ INNER JOIN purchases
 ON users.id = purchases.buyer_id;
 
 DROP TABLE purchases;
+
+CREATE TABLE purchases_products (
+    purchase_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL
+);
+
+INSERT INTO purchases_products
+    VALUES
+        ("pu001", "p002", 1),
+        ("pu001", "p001", 1),
+        ("pu001", "p003", 1),
+        ("pu002", "p003", 1),
+        ("pu002", "p004", 2),
+        ("pu002", "p005", 2);
+
+SELECT 
+purchases.id as purchaseId,
+purchases.total_price,
+purchases.buyer_id as buyerId,
+products.id AS productId,
+purchases_products.quantity,
+products.name AS productName,
+products.category,
+products.price AS productPrice
+FROM purchases
+INNER JOIN purchases_products ON purchases.id = purchases_products.purchase_id
+INNER JOIN products ON purchases_products.product_id = products.id;
+
+DROP TABLE purchases_products;
