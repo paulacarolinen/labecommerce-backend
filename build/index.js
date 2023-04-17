@@ -18,7 +18,7 @@ const database_1 = require("./database");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
-app.listen(3000, () => {
+app.listen(3003, () => {
     console.log("Servidor rodando na porta 3003");
 });
 app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
