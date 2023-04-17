@@ -41,4 +41,4 @@ app.get("/purchases", getAllPurchases_1.getAllPurchases);
 app.get("/users/:id/purchases", getUserPurchasesByUserId_1.getUserPurchasesByUserId);
 app.get("/purchases/:id", getPurchaseById_1.getPurchaseById);
 app.delete("/purchases/:id", deletePurchaseById_1.deletePurchaseById);
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=app.js.map
